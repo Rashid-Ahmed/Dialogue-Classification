@@ -1,61 +1,40 @@
-import pandas as pd
 import torch
+import pandas as pd
 import os
-from utils.get_embeddings import get_model
-from utils.data_processing import get_one_hot, get_splitted_data
-from utils.train_model import get_model_weights, initialize_model, train_model, load_existing_model
+import warnings
+from utils.train_transformer import train_model
 
-EMBEDDING_SIZE = 100
-SENTENCE_SIZE = 79
-DATA_DIR = 'data'
-EMBEDDING_MODEL_NAME = 'cc.de.100.bin'
-EPI_DATA_DIR = os.path.join(os.getcwd(), DATA_DIR, 'Augmented_Data_EPI.csv')
-SOC_DATA_DIR = os.path.join(os.getcwd(), DATA_DIR, 'Augmented_Data_SOC.csv')
-EPI_DATA_LEN = 16857
-SOC_DATA_LEN = 17103
-CHECKPOINT_DIR = os.path.join(os.getcwd(), 'checkpoints')
-
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-#device = 'cpu'
-embedding_model = get_model(os.path.join(DATA_DIR, EMBEDDING_MODEL_NAME))
-
-NUM_LAYERS = 2
-HIDDEN_SIZE = 400
-STEP_SIZE =  0.0003
-
+BATCH_SIZE = 32
 EPOCHS = 2
-BATCH_SIZE = 512
-OUTPUT_SIZE_EPI = 2
-OUTPUT_SIZE_SOC = 6
-MODEL_TYPES = ['self', 'parents', 'teacher', 're', 'cause', 'none', 'soc']
+STEP_SIZE = 0.0000002
+EPS = .00000001 
+WEIGHT_DECAY = 0
+MODEL = 'xlm-roberta-base'
+TEST_LEN = 1081
+DATA_DIR = 'data'
+CHECKPOINT_DIR = 'checkpoints'
+MODEL_TYPES = ['self', 'parents', 'teacher', 're', 'cause']
+OUTPUTS_EPI = 2
+OUTPUTS_SOC = 6
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-
-data_epi = pd.read_csv(EPI_DATA_DIR)
-data_epi = get_one_hot(data_epi['epi'])
-data_soc = None
-
-def start_processes(TYPE_MODEL, data, DATA_FILE, DATA_LEN,load_model = False):
-    data, OUTPUT_SIZE = get_splitted_data(TYPE_MODEL, data)
+def start_processes(MODEL_TYPES, TEST_LEN, CHECKPOINT_DIR, device, DATA_DIR, EPOCHS, STEP_SIZE, BATCH_SIZE, WEIGHT_DECAY, EPS, OUTPUTS_EPI, OUTPUTS_SOC, train_type, load_epi_model = False):
+    
     model_weights = None
-    if TYPE_MODEL!='soc':
-        model_weights = get_model_weights(data)
-    model, criterion, optimizer = initialize_model(device,OUTPUT_SIZE ,HIDDEN_SIZE , NUM_LAYERS, EMBEDDING_SIZE, STEP_SIZE, model_weights = model_weights)
-    if load_model == True:
-        model = load_existing_model(os.path.join('checkpoints', 'model_'+TYPE_MODEL+'.ckpt'), device, OUTPUT_SIZE_EPI, HIDDEN_SIZE , NUM_LAYERS, EMBEDDING_SIZE, STEP_SIZE)
-
-    train_model(model, optimizer, criterion, TYPE_MODEL, BATCH_SIZE, EPOCHS, SENTENCE_SIZE, EMBEDDING_SIZE, embedding_model, DATA_FILE, CHECKPOINT_DIR, DATA_LEN, device)
-
-
-
-
-# %%
-#start_processes('parents', data_epi, EPI_DATA_DIR, EPI_DATA_LEN, load_model = False)
-#start_processes('none', data_epi, EPI_DATA_DIR, EPI_DATA_LEN, load_model = False)
-#start_processes('self', data_epi, EPI_DATA_DIR, EPI_DATA_LEN, load_model = False)
-#start_processes('teacher', data_epi, EPI_DATA_DIR, EPI_DATA_LEN,  load_model = False)
-#start_processes('re', data_epi, EPI_DATA_DIR, EPI_DATA_LEN, load_model = False)
-#start_processes('cause', data_epi, EPI_DATA_DIR, EPI_DATA_LEN, load_model = False)
-start_processes('soc', data_soc, SOC_DATA_DIR, SOC_DATA_LEN, load_model = False)
+    #Train EPI models
+    if train_type == 'both' or train_type == 'EPI':
+        for model_type in MODEL_TYPES:
+            EPI_DATA_DIR = os.path.join(DATA_DIR, model_type)
+            TRAIN_LEN = len(pd.read_csv(EPI_DATA_DIR+'_train.csv')) 
+            train_model(OUTPUTS_EPI, MODEL, model_type, TRAIN_LEN, TEST_LEN, CHECKPOINT_DIR, device, EPI_DATA_DIR,EPOCHS, STEP_SIZE, BATCH_SIZE, WEIGHT_DECAY, EPS, model_weights, load_model = load_epi_model)
+    
+    if train_type == 'both' or train_type == 'SOC':
+        #Train SOC models
+        SOC_DATA_DIR = os.path.join(DATA_DIR, 'Data_SOC')
+        TRAIN_LEN = len(pd.read_csv(SOC_DATA_DIR+'_train.csv')) 
+        model_type = 'soc'
+        train_model(OUTPUTS_SOC, MODEL, model_type, TRAIN_LEN, TEST_LEN, CHECKPOINT_DIR, device, SOC_DATA_DIR, EPOCHS, STEP_SIZE, BATCH_SIZE, WEIGHT_DECAY, EPS, model_weights, load_model = load_epi_model)
 
 
 
+start_processes(MODEL_TYPES, TEST_LEN, CHECKPOINT_DIR, device, DATA_DIR, EPOCHS, STEP_SIZE, BATCH_SIZE, WEIGHT_DECAY, EPS, OUTPUTS_EPI, OUTPUTS_SOC, train_type = 'both', load_epi_model = False)
