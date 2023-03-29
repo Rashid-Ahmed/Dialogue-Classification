@@ -1,1 +1,1 @@
-Due to policy reasons, i cannot share the model checkpoints. Change the device parameter to cuda and train the checkpoints by running training.py
+Due to policy reasons, i cannot share the model checkpoints. You can however train your own checkpoints. Go to config.ini check device to cuda and use your own hyperparameters, instead of the dummy ones. You can then run training.py to generate checkpoints. 
