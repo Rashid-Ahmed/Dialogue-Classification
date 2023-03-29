@@ -1,0 +1,9 @@
+pip install pandas
+pip install numpy
+pip install pytorch (for faster results install pytorch gpu)
+pip install transformers
+pip install fasttext
+pip install scikit-learn
+pip install xgboost
+pip install vaderSentiment
+pip install protobuf
