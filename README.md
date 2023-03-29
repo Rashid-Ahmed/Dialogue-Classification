@@ -6,7 +6,7 @@ Install the required packages using requirements.txt file.
 
 Run the server.py file to start the server.
 
-Run a client that connects to the server (the IP and port can be set from the config file)
+Run a client that connects to the server (the IP and port can be set from the config file). A sample client is given to get started.
 
 
 ## Epistemic Dimension
