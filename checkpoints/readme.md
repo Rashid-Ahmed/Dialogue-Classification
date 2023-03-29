@@ -1,1 +1,1 @@
-Checkpoints for Running Inference. Train the model using training.py if you do not have checkpoints available. 
+Due to privacy reasons, i cannot share the checkpoints. Change the device parameter to cuda and train the checkpoints by running training.py
