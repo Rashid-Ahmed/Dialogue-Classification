@@ -8,6 +8,7 @@ Run the server.py file to start the server.
 
 Run a client that connects to the server (the IP and port can be set from the config file). A sample client is given to get started.
 
+To train the model from scratch run training.py with custom hyperparameters
 
 ## Epistemic Dimension
 The epistemic dimension of the chat messages includes parent's attribution, teacher's attribution, self attribution, re attribution and attribution cause.
