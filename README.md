@@ -1,5 +1,5 @@
-# Dialogue Inference
-Dialogue Inference is a machine learning-based tool for predicting the epistemic and social dimensions of chat dialogues in real-time. The tool uses various machine learning algorithms like XGBoost, LSTM, and BERT based models to predict the dimensions of the messages.
+# Dialogue Classification
+Dialogue Classification is a machine learning-based tool for predicting the epistemic and social dimensions of chat dialogues in real-time. The tool uses various machine learning algorithms like XGBoost, LSTM, and BERT based models to predict the dimensions of the messages.
 
 ## Usage
 Install the required packages using requirements.txt file.
