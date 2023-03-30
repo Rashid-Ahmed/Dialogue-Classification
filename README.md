@@ -15,6 +15,3 @@ The epistemic dimension of the chat messages includes parent's attribution, teac
 
 ## Social Dimension
 The social dimension of the chat messages includes externalization, integration and acceptance among other social cues.
-
-## Credits
-The tool was developed by Rashid Ahmed.
