@@ -6,7 +6,7 @@ config = configparser.ConfigParser()
 config.read('config.ini')
 
 host = config.get('DEFAULT', 'IP')
-PORT = int(config.get('DEFAULT', 'PORT'))
+port = int(config.get('DEFAULT', 'PORT'))
 
 client_socket = socket.socket()  # instantiate
 client_socket.connect((host, port))  # connect to the server
